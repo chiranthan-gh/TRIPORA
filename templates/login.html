@@ -1,0 +1,81 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TRIPORA | Login</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+<body>
+
+    <header class="navbar">
+        <a href="/" class="logo">TRIPORA<span>.</span></a>
+        <a href="/" class="login-btn">Home</a>
+    </header>
+
+    <main class="auth-page">
+
+        <section class="auth-card">
+
+            <p class="eyebrow">WELCOME BACK</p>
+
+            <h1>Login to <span>TRIPORA.</span></h1>
+
+            <p class="auth-description">
+                Your next journey is just a login away.
+            </p>
+
+            {% if error %}
+                <div class="error-message">{{ error }}</div>
+            {% endif %}
+
+            <form method="POST" action="{{ url_for('login') }}">
+
+                <div class="field">
+                    <label for="email">EMAIL ADDRESS</label>
+                    <input
+                        type="email"
+                        id="email"
+                        name="email"
+                        placeholder="Enter your email"
+                        value="{{ request.form.get('email', '') }}"
+                        required
+                    >
+                </div>
+
+                <div class="field">
+                    <label for="password">PASSWORD</label>
+                    <input
+                        type="password"
+                        id="password"
+                        name="password"
+                        placeholder="Enter your password"
+                        required
+                    >
+                </div>
+
+                <button type="submit" class="confirm-btn">
+                    Login →
+                </button>
+
+            </form>
+
+            <p class="auth-switch">
+                New to TRIPORA?
+                <a href="{{ url_for('register') }}">Create an account</a>
+            </p>
+
+        </section>
+
+    </main>
+
+    <footer>
+        <p>TRIPORA © 2026 | Travel. Discover. Experience.</p>
+    </footer>
+
+</body>
+</html>

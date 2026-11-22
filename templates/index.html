@@ -1,0 +1,348 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>TRIPORA | Travel Your Way</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+<body>
+
+    <!-- ==================================
+         NAVIGATION BAR
+    =================================== -->
+
+    <header class="navbar">
+
+        <a href="/" class="logo">
+            TRIPORA<span>.</span>
+        </a>
+
+        <nav>
+
+            <a href="/" class="active">Home</a>
+
+            <a href="#flight-search">Flights</a>
+
+            {% if session.get('user_id') %}
+                <a href="{{ url_for('my_trips') }}">My Trips</a>
+            {% else %}
+                <a href="{{ url_for('login') }}">My Trips</a>
+            {% endif %}
+
+            <a href="#">About</a>
+
+        </nav>
+
+
+        {% if session.get('user_id') %}
+
+            <div class="nav-user">
+                Hi, {{ session.get('user_name') }}
+            </div>
+
+            <form method="POST" action="{{ url_for('logout') }}">
+
+                <button type="submit" class="login-btn">
+                    Logout
+                </button>
+
+            </form>
+
+        {% else %}
+
+            <a href="{{ url_for('login') }}" class="login-btn">
+                Login / Sign Up
+            </a>
+
+        {% endif %}
+
+    </header>
+
+
+    <!-- ==================================
+         HERO SECTION
+    =================================== -->
+
+    <main class="hero">
+
+        <div class="hero-content">
+
+            <p class="eyebrow">
+                DISCOVER SOMETHING NEW
+            </p>
+
+            <h1>
+                Your next journey<br>
+                starts <span>here.</span>
+            </h1>
+
+            <p class="description">
+                Explore destinations, discover experiences
+                and make every journey memorable.
+            </p>
+
+
+            <!-- ==================================
+                 FLIGHT SEARCH
+            =================================== -->
+
+            <div class="search-box" id="flight-search">
+
+                <div class="search-heading">
+
+                    <h2>Find your flight</h2>
+
+                    <span>✈ Flight Search</span>
+
+                </div>
+
+
+                <form class="flight-form"
+                      method="POST"
+                      action="{{ url_for('home') }}">
+
+
+                    <!-- ORIGIN -->
+
+                    <div class="field">
+
+                        <label for="origin">FROM</label>
+
+                        <input
+                            type="text"
+                            id="origin"
+                            name="origin"
+                            placeholder="Departure city"
+                            value="{{ request.form.get('origin', '') }}"
+                            required
+                        >
+
+                    </div>
+
+
+                    <!-- DESTINATION -->
+
+                    <div class="field">
+
+                        <label for="destination">TO</label>
+
+                        <input
+                            type="text"
+                            id="destination"
+                            name="destination"
+                            placeholder="Destination city"
+                            value="{{ request.form.get('destination', '') }}"
+                            required
+                        >
+
+                    </div>
+
+
+                    <!-- TRAVEL DATE -->
+
+                    <div class="field">
+
+                        <label for="travel_date">DEPARTURE</label>
+
+                        <input
+                            type="date"
+                            id="travel_date"
+                            name="travel_date"
+                            min="{{ current_date }}"
+                            value="{{ request.form.get('travel_date', '') }}"
+                            required
+                        >
+
+                    </div>
+
+
+                    <!-- PASSENGERS -->
+
+                    <div class="field">
+
+                        <label for="passengers">TRAVELLERS</label>
+
+                        <select
+                            id="passengers"
+                            name="passengers"
+                            required
+                        >
+
+                            <option value="1"
+                                {% if request.form.get('passengers', '1') == '1' %}selected{% endif %}>
+                                1 Traveller
+                            </option>
+
+                            <option value="2"
+                                {% if request.form.get('passengers') == '2' %}selected{% endif %}>
+                                2 Travellers
+                            </option>
+
+                            <option value="3"
+                                {% if request.form.get('passengers') == '3' %}selected{% endif %}>
+                                3 Travellers
+                            </option>
+
+                            <option value="4"
+                                {% if request.form.get('passengers') == '4' %}selected{% endif %}>
+                                4 Travellers
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <!-- SEARCH BUTTON -->
+
+                    <button type="submit" class="search-btn">
+                        Search Flights →
+                    </button>
+
+                </form>
+
+            </div>
+
+        </div>
+
+    </main>
+
+
+    <!-- ==================================
+         SEARCH RESULTS
+    =================================== -->
+
+    <section class="results-section">
+
+
+        {% if error %}
+
+            <div class="error-message">
+                {{ error }}
+            </div>
+
+        {% endif %}
+
+
+        {% if flights %}
+
+            <h2>Available Flights</h2>
+
+            <p class="results-description">
+                Here are the matching flights for your journey.
+            </p>
+
+
+            {% for flight in flights %}
+
+                <article class="flight-card">
+
+
+                    <!-- AIRLINE -->
+
+                    <div class="flight-airline">
+
+                        <h3>
+                            {{ flight['airline'] }}
+                        </h3>
+
+                        <span>
+                            {{ flight['flight_number'] }}
+                        </span>
+
+                    </div>
+
+
+                    <!-- ROUTE -->
+
+                    <div class="flight-route">
+
+                        <div>
+
+                            <h3>
+                                {{ flight['departure_time'] }}
+                            </h3>
+
+                            <p>
+                                {{ flight['origin'] }}
+                            </p>
+
+                        </div>
+
+
+                        <div class="route-arrow">
+                            ───── ✈ ─────
+                        </div>
+
+
+                        <div>
+
+                            <h3>
+                                {{ flight['arrival_time'] }}
+                            </h3>
+
+                            <p>
+                                {{ flight['destination'] }}
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- PRICE AND BOOKING -->
+
+                    <div class="flight-price">
+
+                        <h3>
+                            ₹{{ "%.2f"|format(flight['price']) }}
+                        </h3>
+
+                        <p>Per passenger</p>
+
+                        <p>
+                            {{ flight['seats_available'] }}
+                            seats available
+                        </p>
+
+
+                        <a
+                            href="{{ url_for('book_flight', flight_id=flight['id']) }}"
+                            class="book-btn"
+                        >
+                            Book Now →
+                        </a>
+
+                    </div>
+
+                </article>
+
+            {% endfor %}
+
+        {% endif %}
+
+    </section>
+
+
+    <!-- ==================================
+         FOOTER
+    =================================== -->
+
+    <footer>
+
+        <p>
+            TRIPORA © 2026 | Travel. Discover. Experience.
+        </p>
+
+    </footer>
+
+
+</body>
+</html>

@@ -1,0 +1,195 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>TRIPORA | My Trips</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+<body>
+
+    <header class="navbar">
+
+        <a href="/" class="logo">TRIPORA<span>.</span></a>
+
+        <nav>
+            <a href="/">Home</a>
+            <a href="/#flight-search">Flights</a>
+            <a href="/my-trips" class="active">My Trips</a>
+        </nav>
+
+        <form method="POST" action="{{ url_for('logout') }}">
+            <button type="submit" class="login-btn">
+                Logout
+            </button>
+        </form>
+
+    </header>
+
+
+    <main class="trips-page">
+
+        <div class="trips-container">
+
+            <p class="eyebrow">YOUR JOURNEY, ALL IN ONE PLACE</p>
+
+            <h1>My <span>Trips.</span></h1>
+
+            <p class="description">
+                Welcome, {{ user_name }}!
+                Manage your flight reservations here.
+            </p>
+
+
+            {% if message %}
+                <div class="trips-message">
+                    {{ message }}
+                </div>
+            {% endif %}
+
+
+            <h2 class="trips-heading">Your Booking History</h2>
+
+
+            {% if bookings %}
+
+                {% for booking in bookings %}
+
+                    <article class="trip-card">
+
+                        <div class="trip-top">
+
+                            <div>
+                                <h3>{{ booking['airline'] }}</h3>
+                                <p>{{ booking['flight_number'] }}</p>
+                            </div>
+
+                            <span class="booking-status
+                                {% if booking['booking_status'] == 'CANCELLED' %}
+                                    cancelled
+                                {% else %}
+                                    confirmed
+                                {% endif %}">
+
+                                {{ booking['booking_status'] }}
+
+                            </span>
+
+                        </div>
+
+
+                        <div class="trip-route">
+
+                            <div>
+                                <h2>{{ booking['origin'] }}</h2>
+                                <p>{{ booking['departure_time'] }}</p>
+                            </div>
+
+                            <div class="route-arrow">
+                                ───── ✈ ─────
+                            </div>
+
+                            <div>
+                                <h2>{{ booking['destination'] }}</h2>
+                                <p>{{ booking['arrival_time'] }}</p>
+                            </div>
+
+                        </div>
+
+
+                        <div class="trip-details">
+
+                            <p>
+                                <strong>Booking Reference:</strong>
+                                {{ booking['booking_reference'] }}
+                            </p>
+
+                            <p>
+                                <strong>Passenger:</strong>
+                                {{ booking['passenger_name'] }}
+                            </p>
+
+                            <p>
+                                <strong>Travel Date:</strong>
+                                {{ booking['travel_date'] }}
+                            </p>
+
+                            <p>
+                                <strong>Passengers:</strong>
+                                {{ booking['passengers'] }}
+                            </p>
+
+                            <p>
+                                <strong>Total Amount:</strong>
+                                ₹{{ "%.2f"|format(booking['total_amount']) }}
+                            </p>
+
+                            <p>
+                                <strong>Payment:</strong>
+                                {{ booking['payment_status'] }}
+                            </p>
+
+                        </div>
+
+
+                        {% if booking['booking_status'] == 'CONFIRMED' %}
+
+                            <form
+                                method="POST"
+                                action="{{ url_for('cancel_booking', booking_id=booking['id']) }}"
+                                onsubmit="return confirm('Are you sure you want to cancel this booking?');"
+                            >
+
+                                <button type="submit" class="cancel-btn">
+                                    Cancel Booking
+                                </button>
+
+                            </form>
+
+                        {% else %}
+
+                            <p class="cancelled-note">
+                                This booking has been cancelled.
+                            </p>
+
+                        {% endif %}
+
+                    </article>
+
+                {% endfor %}
+
+            {% else %}
+
+                <div class="empty-trips">
+
+                    <h2>No trips yet!</h2>
+
+                    <p>
+                        Your booked journeys will appear here.
+                    </p>
+
+                    <a href="/" class="confirm-btn">
+                        Explore Flights →
+                    </a>
+
+                </div>
+
+            {% endif %}
+
+        </div>
+
+    </main>
+
+
+    <footer>
+        <p>TRIPORA © 2026 | Travel. Discover. Experience.</p>
+    </footer>
+
+</body>
+</html>

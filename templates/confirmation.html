@@ -1,0 +1,142 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>TRIPORA | Booking Confirmed</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+<body>
+
+    <header class="navbar">
+
+        <div class="logo">
+            TRIPORA<span>.</span>
+        </div>
+
+        <a href="/" class="login-btn">
+            Home
+        </a>
+
+    </header>
+
+
+    <main class="confirmation-page">
+
+        <div class="confirmation-card">
+
+            <div class="success-icon">
+                ✓
+            </div>
+
+            <p class="eyebrow">RESERVATION COMPLETE</p>
+
+            <h1>You're all set!</h1>
+
+            <p class="confirmation-description">
+                Your demonstration booking has been successfully recorded.
+            </p>
+
+
+            <div class="booking-reference">
+
+                <span>BOOKING REFERENCE</span>
+
+                <h2>{{ booking_reference }}</h2>
+
+            </div>
+
+
+            <div class="confirmation-details">
+
+                <h2>Booking Details</h2>
+
+                <div class="detail-row">
+                    <span>Passenger</span>
+                    <strong>{{ passenger_name }}</strong>
+                </div>
+
+                <div class="detail-row">
+                    <span>Email</span>
+                    <strong>{{ email }}</strong>
+                </div>
+
+                <div class="detail-row">
+                    <span>Phone</span>
+                    <strong>{{ phone }}</strong>
+                </div>
+
+                <div class="detail-row">
+                    <span>Airline</span>
+                    <strong>{{ flight['airline'] }}</strong>
+                </div>
+
+                <div class="detail-row">
+                    <span>Flight Number</span>
+                    <strong>{{ flight['flight_number'] }}</strong>
+                </div>
+
+                <div class="detail-row">
+                    <span>Journey</span>
+                    <strong>
+                        {{ flight['origin'] }} →
+                        {{ flight['destination'] }}
+                    </strong>
+                </div>
+
+                <div class="detail-row">
+                    <span>Travel Date</span>
+                    <strong>{{ flight['travel_date'] }}</strong>
+                </div>
+
+                <div class="detail-row">
+                    <span>Passengers</span>
+                    <strong>{{ passengers }}</strong>
+                </div>
+
+                <div class="detail-row">
+                    <span>Payment</span>
+                    <strong class="payment-status">
+                        Simulated Successful
+                    </strong>
+                </div>
+
+                <div class="detail-row total-row">
+                    <span>Total Amount</span>
+                    <strong>
+                        ₹{{ "%.2f"|format(total_amount) }}
+                    </strong>
+                </div>
+
+            </div>
+
+
+            <p class="demo-notice">
+                This is an academic demonstration.
+                No actual payment has been processed.
+            </p>
+
+
+            <a href="/" class="confirm-btn home-btn">
+                Return to Homepage →
+            </a>
+
+        </div>
+
+    </main>
+
+
+    <footer>
+        <p>
+            TRIPORA © 2026 | Travel. Discover. Experience.
+        </p>
+    </footer>
+
+</body>
+</html>

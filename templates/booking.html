@@ -1,0 +1,354 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>TRIPORA | Complete Your Booking</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+<body>
+
+
+    <!-- ==================================
+         NAVIGATION
+    =================================== -->
+
+    <header class="navbar">
+
+        <a href="/" class="logo">
+            TRIPORA<span>.</span>
+        </a>
+
+        <nav>
+
+            <a href="/">Home</a>
+
+            <a href="/#flight-search">Flights</a>
+
+            {% if session.get('user_id') %}
+                <a href="{{ url_for('my_trips') }}">My Trips</a>
+            {% else %}
+                <a href="{{ url_for('login') }}">My Trips</a>
+            {% endif %}
+
+        </nav>
+
+        {% if session.get('user_id') %}
+
+            <form method="POST" action="{{ url_for('logout') }}">
+
+                <button type="submit" class="login-btn">
+                    Logout
+                </button>
+
+            </form>
+
+        {% else %}
+
+            <a href="{{ url_for('login') }}" class="login-btn">
+                Login
+            </a>
+
+        {% endif %}
+
+    </header>
+
+
+    <!-- ==================================
+         BOOKING PAGE
+    =================================== -->
+
+    <main class="booking-page">
+
+        <div class="booking-container">
+
+
+            <p class="eyebrow">
+                YOUR JOURNEY AWAITS
+            </p>
+
+            <h1>
+                Complete your <span>booking.</span>
+            </h1>
+
+            <p class="description">
+                Enter your passenger details to reserve your flight.
+            </p>
+
+
+            <!-- ==================================
+                 SELECTED FLIGHT
+            =================================== -->
+
+            <section class="booking-summary">
+
+                <h2>Selected Flight</h2>
+
+
+                <div class="summary-airline">
+
+                    <h3>
+                        {{ flight['airline'] }}
+                    </h3>
+
+                    <span>
+                        {{ flight['flight_number'] }}
+                    </span>
+
+                </div>
+
+
+                <div class="summary-route">
+
+                    <div>
+
+                        <h2>
+                            {{ flight['departure_time'] }}
+                        </h2>
+
+                        <p>
+                            {{ flight['origin'] }}
+                        </p>
+
+                    </div>
+
+
+                    <div class="route-arrow">
+                        ───── ✈ ─────
+                    </div>
+
+
+                    <div>
+
+                        <h2>
+                            {{ flight['arrival_time'] }}
+                        </h2>
+
+                        <p>
+                            {{ flight['destination'] }}
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <p class="summary-date">
+                    Travel Date:
+                    {{ flight['travel_date'] }}
+                </p>
+
+
+                <p class="summary-price">
+
+                    ₹{{ "%.2f"|format(flight['price']) }}
+
+                    <span>per passenger</span>
+
+                </p>
+
+
+                <p class="summary-date">
+                    {{ flight['seats_available'] }}
+                    seats currently available
+                </p>
+
+            </section>
+
+
+            <!-- ==================================
+                 PASSENGER INFORMATION
+            =================================== -->
+
+            <section class="passenger-section">
+
+                <h2>Passenger Information</h2>
+
+
+                {% if error %}
+
+                    <div class="error-message">
+                        {{ error }}
+                    </div>
+
+                {% endif %}
+
+
+                <form method="POST"
+                      action="{{ url_for('book_flight', flight_id=flight['id']) }}">
+
+
+                    <div class="booking-fields">
+
+
+                        <!-- PASSENGER NAME -->
+
+                        <div class="field">
+
+                            <label for="passenger_name">
+                                FULL NAME
+                            </label>
+
+                            <input
+                                type="text"
+                                id="passenger_name"
+                                name="passenger_name"
+                                placeholder="Enter passenger name"
+                                value="{{ request.form.get('passenger_name', session.get('user_name', '')) }}"
+                                maxlength="100"
+                                required
+                            >
+
+                        </div>
+
+
+                        <!-- EMAIL -->
+
+                        <div class="field">
+
+                            <label for="email">
+                                EMAIL ADDRESS
+                            </label>
+
+                            <input
+                                type="email"
+                                id="email"
+                                name="email"
+                                placeholder="example@email.com"
+                                value="{{ request.form.get('email', user_email or '') }}"
+                                maxlength="254"
+                                required
+                            >
+
+                        </div>
+
+
+                        <!-- PHONE -->
+
+                        <div class="field">
+
+                            <label for="phone">
+                                PHONE NUMBER
+                            </label>
+
+                            <input
+                                type="tel"
+                                id="phone"
+                                name="phone"
+                                placeholder="10-digit mobile number"
+                                value="{{ request.form.get('phone', '') }}"
+                                maxlength="15"
+                                pattern="[0-9]{10,15}"
+                                required
+                            >
+
+                        </div>
+
+
+                        <!-- PASSENGER COUNT -->
+
+                        <div class="field">
+
+                            <label for="passengers">
+                                NUMBER OF PASSENGERS
+                            </label>
+
+                            <select
+                                id="passengers"
+                                name="passengers"
+                                required
+                            >
+
+                                {% for count in range(1, 5) %}
+
+                                    <option
+                                        value="{{ count }}"
+                                        {% if request.form.get('passengers', '1')|int == count %}selected{% endif %}
+                                        {% if count > flight['seats_available'] %}disabled{% endif %}
+                                    >
+
+                                        {{ count }}
+
+                                        Passenger{% if count > 1 %}s{% endif %}
+
+                                    </option>
+
+                                {% endfor %}
+
+                            </select>
+
+                        </div>
+
+
+                    </div>
+
+
+                    <!-- ==================================
+                         FARE SUMMARY
+                    =================================== -->
+
+                    <div class="booking-total">
+
+                        <span>
+                            Fare per passenger
+                        </span>
+
+                        <strong>
+                            ₹{{ "%.2f"|format(flight['price']) }}
+                        </strong>
+
+                    </div>
+
+
+                    <p class="booking-note">
+                        Final fare is calculated based on the
+                        number of passengers selected.
+                    </p>
+
+
+                    <!-- CONFIRM BOOKING -->
+
+                    <button type="submit" class="confirm-btn">
+
+                        Confirm Booking →
+
+                    </button>
+
+
+                    <a href="/" class="cancel-link">
+
+                        Cancel and return to search
+
+                    </a>
+
+
+                </form>
+
+            </section>
+
+        </div>
+
+    </main>
+
+
+    <!-- ==================================
+         FOOTER
+    =================================== -->
+
+    <footer>
+
+        <p>
+            TRIPORA © 2026 | Travel. Discover. Experience.
+        </p>
+
+    </footer>
+
+
+</body>
+</html>
